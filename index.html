@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEE Prep Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+/* ══ UG LIFE TRACKER COLOUR SCHEME ══ */
+:root{
+  --bg:#F2EDE3;
+  --bg2:#EAE4D8;
+  --bg3:#D4CABА;
+  --card:#FAFAF6;
+  --border:#D8D0C4;
+  --border2:#C4B8A8;
+  --text:#28201C;
+  --text2:#6E6054;
+  --text3:#A09080;
+  --accent:#C8102E;
+  --accent-s:rgba(200,16,46,.09);
+  --blue:#2563EB;
+  --blue-s:rgba(37,99,235,.09);
+  --shadow:rgba(0,0,0,.06);
+  /* week square colours */
+  --wk:#C9C0B0;
+  --wk-b:#B8AFA0;
+  --wk-holiday:#C8DAE8;
+  --wk-holiday-b:#9ABBD0;
+  --ff-d:'Playfair Display',Georgia,serif;
+  --ff-b:'Plus Jakarta Sans',system-ui,sans-serif;
+  --ff-m:'Space Mono',monospace;
+}
+[data-theme="dark"]{
+  --bg:#18130E;
+  --bg2:#211A14;
+  --bg3:#2E2418;
+  --card:#1C1610;
+  --border:#382C20;
+  --border2:#4A3C2C;
+  --text:#EDE4D8;
+  --text2:#A08870;
+  --text3:#685848;
+  --accent:#FF4A60;
+  --accent-s:rgba(255,74,96,.12);
+  --blue:#60A5FA;
+  --blue-s:rgba(96,165,250,.1);
+  --shadow:rgba(0,0,0,.35);
+  --wk:#2E2418;
+  --wk-b:#4A3C2C;
+  --wk-holiday:#1A2A3A;
+  --wk-holiday-b:#2A4A6A;
+}
+
+body{font-family:var(--ff-b);background:var(--bg);color:var(--text);min-height:100vh;transition:background .25s,color .25s;line-height:1.6;font-size:15px}
+
+/* ── HEADER ── */
+.hdr{max-width:1080px;margin:0 auto;padding:44px 36px 28px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.hdr-left h1{font-family:var(--ff-d);font-size:2.5rem;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.hdr-left h1 em{font-style:italic;color:var(--accent)}
+.hdr-left p{color:var(--text2);margin-top:8px;font-size:.9rem;font-weight:300;max-width:480px}
+.btn-dark{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:8px 16px;border-radius:6px;cursor:pointer;font-family:var(--ff-b);font-size:.82rem;font-weight:500;transition:.18s;white-space:nowrap;flex-shrink:0}
+.btn-dark:hover{background:var(--border);color:var(--text)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 36px}
+
+/* ── SETUP ── */
+.setup-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;box-shadow:0 1px 8px var(--shadow);margin-bottom:22px}
+.setup-card h2{font-family:var(--ff-d);font-size:1.05rem;margin-bottom:16px;color:var(--text)}
+.setup-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+.field label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.field input,.field select{width:100%;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);padding:8px 11px;border-radius:7px;font-family:var(--ff-b);font-size:.87rem;outline:none;transition:.18s;-webkit-appearance:none;appearance:none}
+.field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23A09080' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-s)}
+.field select option{background:var(--card);color:var(--text)}
+.date-hint{font-size:.66rem;color:var(--accent);margin-top:3px;font-family:var(--ff-m);line-height:1.4}
+.btn-build{background:var(--accent);color:#fff;border:none;padding:9px 24px;border-radius:7px;font-family:var(--ff-b);font-size:.9rem;font-weight:600;cursor:pointer;transition:.18s;margin-top:16px;letter-spacing:.02em}
+.btn-build:hover{opacity:.86;transform:translateY(-1px)}
+
+/* ── COUNTDOWNS ── */
+.cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.cd-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;box-shadow:0 1px 8px var(--shadow);text-align:center;position:relative;overflow:hidden}
+.cd-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cd-card.mains::after{background:linear-gradient(90deg,var(--accent),#F97316)}
+.cd-card.adv::after{background:linear-gradient(90deg,var(--blue),#7C3AED)}
+.cd-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.cd-days{font-family:var(--ff-m);font-size:2.8rem;font-weight:700;line-height:1;margin-bottom:2px}
+.cd-card.mains .cd-days{color:var(--accent)}
+.cd-card.adv .cd-days{color:var(--blue)}
+.cd-sub{font-size:.8rem;color:var(--text2)}
+.cd-date{font-size:.68rem;color:var(--text3);margin-top:4px;font-family:var(--ff-m)}
+
+/* ── STATS ── */
+.stats-bar{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 22px;display:flex;box-shadow:0 1px 8px var(--shadow);margin-bottom:20px}
+.stat{flex:1;text-align:center;padding:0 10px;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-v{font-family:var(--ff-m);font-size:1.4rem;font-weight:700;color:var(--text)}
+.stat-l{font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-top:2px}
+
+/* ── LEGEND ── */
+.legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;font-size:.74rem;color:var(--text2)}
+.legend-t{font-size:.65rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3)}
+.lsw{width:13px;height:13px;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:3px}
+.lsw-dash{width:13px;height:13px;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:3px;border:1.5px dashed var(--wk-holiday-b);background:var(--wk-holiday)}
+.ldot{width:7px;height:7px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:3px}
+.lsep{width:1px;height:14px;background:var(--border)}
+
+/* ══ YEAR / WEEK GRID ══ */
+.cal-section{margin-bottom:32px}
+
+/* Year card mimicking UG Life Tracker */
+.year-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:22px 26px 20px;
+  box-shadow:0 1px 8px var(--shadow);
+  margin-bottom:18px;
+}
+
+/* "— YEAR 1 · 2026-2027 —" */
+.year-hdr{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:20px;
+}
+.year-hdr-line{flex:1;height:1px;background:var(--border)}
+.year-hdr-text{
+  font-family:var(--ff-m);font-size:.7rem;font-weight:700;
+  letter-spacing:.1em;color:var(--text3);white-space:nowrap;
+}
+
+/* Month row within year */
+.month-block{margin-bottom:14px}
+.month-block:last-child{margin-bottom:0}
+.month-lbl{
+  font-family:var(--ff-m);font-size:.62rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--text3);
+  margin-bottom:5px;
+}
+
+.weeks-row{display:flex;flex-wrap:wrap;gap:3px}
+
+/* ── WEEK SQUARES (matching UG Life Tracker) ── */
+.wk{
+  width:20px;height:20px;border-radius:4px;
+  background:var(--wk);border:1.5px solid var(--wk-b);
+  position:relative;cursor:default;
+  transition:transform .1s,box-shadow .1s;
+  flex-shrink:0;
+}
+.wk.clickable{cursor:pointer}
+.wk.clickable:hover{transform:scale(1.45);z-index:5;box-shadow:0 3px 12px var(--shadow)}
+.wk.future{opacity:.42;cursor:default}
+.wk.cur{
+  outline:2px solid var(--accent);
+  outline-offset:1.5px;
+  z-index:1;
+}
+
+/* Productivity colour fills */
+.wk.p1{background:#EF4444;border-color:#DC2626}
+.wk.p2{background:#F97316;border-color:#EA6F10}
+.wk.p3{background:#EAB308;border-color:#CA9A06}
+.wk.p4{background:#84CC16;border-color:#65A30D}
+.wk.p5{background:#22C55E;border-color:#16A34A}
+
+/* Motivation dot */
+.wk .mdot{position:absolute;bottom:2px;right:2px;width:5px;height:5px;border-radius:50%;pointer-events:none}
+.m1{background:#7F1D1D}.m2{background:#9A3412}.m3{background:#92400E}.m4{background:#365314}.m5{background:#14532D}
+
+/* ── FLOATING TOOLTIP ── */
+.tooltip{
+  position:fixed;background:var(--text);color:var(--bg);
+  font-family:var(--ff-m);font-size:.6rem;line-height:1.55;
+  padding:5px 9px;border-radius:5px;z-index:1000;pointer-events:none;
+  white-space:pre;opacity:0;transition:opacity .1s;
+}
+.tooltip.show{opacity:1}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);backdrop-filter:blur(5px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.open{opacity:1;pointer-events:auto}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:400px;width:92%;box-shadow:0 20px 50px rgba(0,0,0,.2);transform:translateY(10px);transition:transform .2s}
+.overlay.open .modal{transform:none}
+.modal-h{font-family:var(--ff-d);font-size:1.2rem;margin-bottom:2px}
+.modal-s{font-family:var(--ff-m);font-size:.68rem;color:var(--text3);margin-bottom:20px}
+.score-block{margin-bottom:15px}
+.score-lbl{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.score-lbl .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.btns5{display:flex;gap:5px}
+.sb{flex:1;padding:8px 2px;border-radius:7px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;font-family:var(--ff-b);font-size:.8rem;font-weight:500;text-align:center;transition:.14s;line-height:1.3}
+.sb span{display:block;font-size:.58rem;opacity:.7;margin-top:1px}
+.sb:hover{border-color:var(--accent);background:var(--accent-s);color:var(--accent)}
+.sb.ap{background:var(--accent);border-color:var(--accent);color:#fff}
+.sb.am{background:var(--blue);border-color:var(--blue);color:#fff}
+.modal-acts{display:flex;gap:7px;margin-top:20px}
+.btn-sv{flex:1;background:var(--accent);color:#fff;border:none;padding:9px;border-radius:7px;font-family:var(--ff-b);font-size:.86rem;font-weight:600;cursor:pointer;transition:.18s}
+.btn-sv:hover{opacity:.86}
+.btn-cl,.btn-cx{background:var(--bg2);color:var(--text2);border:1.5px solid var(--border);padding:9px 13px;border-radius:7px;font-family:var(--ff-b);font-size:.8rem;font-weight:500;cursor:pointer;transition:.18s}
+.btn-cl:hover,.btn-cx:hover{background:var(--bg3)}
+
+/* ── CHARTS ── */
+.charts-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.charts-hdr h2{font-family:var(--ff-d);font-size:1.15rem}
+.super-toggle{display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--text2);cursor:pointer;user-select:none}
+.super-toggle input{accent-color:var(--accent);cursor:pointer;width:13px;height:13px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.charts-grid.one{grid-template-columns:1fr}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 8px var(--shadow)}
+.chart-title{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.chart-title .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+canvas{display:block;width:100%!important}
+
+/* ── QUOTE BAR ── */
+.quote-section{
+  border-top:1px solid var(--border);
+  margin-top:40px;
+  padding:36px 36px 56px;
+  max-width:1080px;
+  margin-left:auto;margin-right:auto;
+  display:flex;align-items:center;gap:16px;
+}
+.quote-arrow{
+  background:none;border:1.5px solid var(--border2);color:var(--text3);
+  width:32px;height:32px;border-radius:50%;cursor:pointer;
+  font-family:var(--ff-m);font-size:.9rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  transition:.18s;flex-shrink:0;
+}
+.quote-arrow:hover{background:var(--bg3);color:var(--text);border-color:var(--text3)}
+.quote-inner{flex:1;text-align:center}
+.quote-text{font-family:var(--ff-d);font-style:italic;font-size:1rem;color:var(--text2);line-height:1.7;max-width:640px;margin:0 auto 6px}
+.quote-day{font-size:.68rem;color:var(--text3);font-family:var(--ff-m);letter-spacing:.05em}
+
+/* ── EMPTY / HIDDEN ── */
+.empty{text-align:center;padding:52px 20px;color:var(--text3)}
+.empty p{font-size:.98rem;color:var(--text2);margin-bottom:4px}
+.empty small{font-size:.8rem}
+.hidden{display:none!important}
+
+@media(max-width:720px){
+  .hdr{padding:28px 18px 20px;flex-direction:column;gap:14px}
+  .hdr-left h1{font-size:1.9rem}
+  .wrap{padding:0 18px}
+  .setup-row{grid-template-columns:1fr 1fr}
+  .cd-grid{grid-template-columns:1fr}
+  .stats-bar{flex-wrap:wrap}
+  .stat{flex:0 0 50%;border-right:none;border-bottom:1px solid var(--border);padding-bottom:10px}
+  .stat:nth-child(odd){border-right:1px solid var(--border)}
+  .stat:last-child{border-bottom:none}
+  .charts-grid,.charts-grid.one{grid-template-columns:1fr}
+  .quote-section{padding:28px 18px 44px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-left">
+    <h1>JEE Prep <em>Tracker</em></h1>
+    <p>Enter your prep start date. Score each past week honestly.<br>It's about who wants it more.</p>
+  </div>
+  <button class="btn-dark" id="darkBtn" onclick="toggleDark()">🌙 Dark mode</button>
+</header>
+
+<!-- SETUP -->
+<div class="wrap">
+  <div class="setup-card">
+    <h2>Set up your tracker</h2>
+    <div class="setup-row">
+      <div class="field">
+        <label>First day of prep</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="field">
+        <label>Your current class</label>
+        <select id="classSelect" onchange="autoFillDates()">
+          <option value="">— Select class —</option>
+          <option value="10">Class 10</option>
+          <option value="11">Class 11</option>
+          <option value="12">Class 12</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>JEE Mains date</label>
+        <input type="date" id="mainsDate">
+        <div class="date-hint" id="mainsHint"></div>
+      </div>
+      <div class="field">
+        <label>JEE Advanced date</label>
+        <input type="date" id="advDate">
+        <div class="date-hint" id="advHint"></div>
+      </div>
+    </div>
+    <button class="btn-build" onclick="buildCalendar()">Build my tracker →</button>
+  </div>
+</div>
+
+<!-- COUNTDOWNS -->
+<div class="wrap hidden" id="cdSection">
+  <div class="cd-grid">
+    <div class="cd-card mains">
+      <div class="cd-label">JEE Mains</div>
+      <div class="cd-days" id="mainsDays">—</div>
+      <div class="cd-sub">days remaining</div>
+      <div class="cd-date" id="mainsDateTxt">—</div>
+    </div>
+    <div class="cd-card adv">
+      <div class="cd-label">JEE Advanced</div>
+      <div class="cd-days" id="advDays">—</div>
+      <div class="cd-sub">days remaining</div>
+      <div class="cd-date" id="advDateTxt">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="wrap hidden" id="statsSection">
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-v" id="sv1">—</div><div class="stat-l">weeks elapsed</div></div>
+    <div class="stat"><div class="stat-v" id="sv2">—</div><div class="stat-l">weeks scored</div></div>
+    <div class="stat"><div class="stat-v" id="sv3">—</div><div class="stat-l">avg productivity</div></div>
+    <div class="stat"><div class="stat-v" id="sv4">—</div><div class="stat-l">avg motivation</div></div>
+    <div class="stat"><div class="stat-v" id="sv5">—</div><div class="stat-l">weeks to mains</div></div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="wrap hidden" id="legendSection">
+  <div class="legend">
+    <span class="legend-t">Productivity →</span>
+    <span><span class="lsw" style="background:#EF4444"></span>1 Poor</span>
+    <span><span class="lsw" style="background:#F97316"></span>2 Low</span>
+    <span><span class="lsw" style="background:#EAB308"></span>3 Okay</span>
+    <span><span class="lsw" style="background:#84CC16"></span>4 Good</span>
+    <span><span class="lsw" style="background:#22C55E"></span>5 Great</span>
+    <span class="lsep"></span>
+    <span class="legend-t">Motivation dot →</span>
+    <span><span class="ldot" style="background:#7F1D1D"></span>1</span>
+    <span><span class="ldot" style="background:#9A3412"></span>2</span>
+    <span><span class="ldot" style="background:#92400E"></span>3</span>
+    <span><span class="ldot" style="background:#365314"></span>4</span>
+    <span><span class="ldot" style="background:#14532D"></span>5</span>
+    <span class="lsep"></span>
+    <span><span class="lsw" style="background:var(--wk);border:1.5px solid var(--wk-b)"></span>Unscored</span>
+    <span><span class="lsw" style="background:var(--wk);outline:2px solid var(--accent);outline-offset:1px"></span>This week</span>
+  </div>
+</div>
+
+<!-- CALENDAR -->
+<div class="wrap">
+  <div class="empty" id="emptyState">
+    <p>Select your class — JEE dates will auto-fill — then click <strong>"Build my tracker"</strong></p>
+    <small>Your week grid, countdowns, score history and daily quote will appear here.</small>
+  </div>
+  <div id="calGrid" class="cal-section"></div>
+</div>
+
+<!-- CHARTS -->
+<div class="wrap hidden" id="chartSection" style="margin-bottom:48px">
+  <div class="charts-hdr">
+    <h2>Score history</h2>
+    <label class="super-toggle">
+      <input type="checkbox" id="superToggle" onchange="renderCharts()">
+      Superimpose both charts
+    </label>
+  </div>
+  <div class="charts-grid" id="chartsGrid">
+    <div class="chart-card" id="prodCard">
+      <div class="chart-title" id="prodTitle"><span class="dot" style="background:var(--accent)"></span>Productivity · by week</div>
+      <canvas id="cProd" height="180"></canvas>
+    </div>
+    <div class="chart-card" id="motivCard">
+      <div class="chart-title"><span class="dot" style="background:var(--blue)"></span>Motivation · by week</div>
+      <canvas id="cMotiv" height="180"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="quote-section">
+  <button class="quote-arrow" onclick="quoteNav(-1)" title="Previous quote">&#8249;</button>
+  <div class="quote-inner">
+    <div class="quote-text" id="quoteText">—</div>
+    <div class="quote-day" id="quoteDay"></div>
+  </div>
+  <button class="quote-arrow" onclick="quoteNav(1)" title="Next quote">&#8250;</button>
+</div>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-h" id="mTitle">Week</div>
+    <div class="modal-s" id="mSub">—</div>
+    <div class="score-block">
+      <div class="score-lbl"><span class="dot" style="background:var(--accent)"></span>Productivity — how much did you study &amp; achieve?</div>
+      <div class="btns5" id="pBtns">
+        <button class="sb" onclick="setProd(1)">1<span>poor</span></button>
+        <button class="sb" onclick="setProd(2)">2<span>low</span></button>
+        <button class="sb" onclick="setProd(3)">3<span>okay</span></button>
+        <button class="sb" onclick="setProd(4)">4<span>good</span></button>
+        <button class="sb" onclick="setProd(5)">5<span>great</span></button>
+      </div>
+    </div>
+    <div class="score-block">
+      <div class="score-lbl"><span class="dot" style="background:var(--blue)"></span>Motivation — how driven &amp; inspired did you feel?</div>
+      <div class="btns5" id="mBtns">
+        <button class="sb" onclick="setMotiv(1)">1<span>drained</span></button>
+        <button class="sb" onclick="setMotiv(2)">2<span>low</span></button>
+        <button class="sb" onclick="setMotiv(3)">3<span>okay</span></button>
+        <button class="sb" onclick="setMotiv(4)">4<span>driven</span></button>
+        <button class="sb" onclick="setMotiv(5)">5<span>fired!</span></button>
+      </div>
+    </div>
+    <div class="modal-acts">
+      <button class="btn-sv" onclick="saveScore()">Save score</button>
+      <button class="btn-cl" onclick="clearScore()">Clear</button>
+      <button class="btn-cx" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   QUOTE ENGINE
+   — 200-quote pool, no repeat within 200 days
+   — Special quote inserted at every 7th position
+   — User can navigate ±
+══════════════════════════════════════════ */
+const SPECIAL = "If you don't sacrifice for your dreams, your dreams become the sacrifice.";
+
+// 210-quote pool (all unique study/motivation quotes)
+const QUOTE_POOL = [
+  "The secret of getting ahead is getting started.",
+  "It always seems impossible until it's done.",
+  "Don't watch the clock; do what it does — keep going.",
+  "Success is the sum of small efforts repeated day in and day out.",
+  "Believe you can and you're halfway there.",
+  "Education is the most powerful weapon which you can use to change the world.",
+  "The harder you work for something, the greater you'll feel when you achieve it.",
+  "Dream big, work hard, stay focused.",
+  "Push yourself, because no one else is going to do it for you.",
+  "Great things never came from comfort zones.",
+  "Success doesn't just find you — you have to go out and get it.",
+  "The expert in anything was once a beginner.",
+  "Don't stop when you're tired; stop when you're done.",
+  "Wake up with determination. Go to bed with satisfaction.",
+  "The future belongs to those who believe in the beauty of their dreams.",
+  "It's not about having time; it's about making time.",
+  "You don't have to be great to start, but you have to start to be great.",
+  "Opportunities don't happen — you create them.",
+  "Work hard in silence; let success make the noise.",
+  "The only way to do great work is to love what you do.",
+  "Every day is a new beginning; take a deep breath and start again.",
+  "The pain you feel today will be the strength you feel tomorrow.",
+  "Nothing worth having comes easy.",
+  "Study hard, for the well is deep and our brains are shallow.",
+  "Your mind is a powerful thing. When you fill it with positive thoughts, your life will start to change.",
+  "Don't let what you cannot do interfere with what you can do.",
+  "Be so good they can't ignore you.",
+  "There are no shortcuts to any place worth going.",
+  "Dedication and hard work always pays off.",
+  "The difference between ordinary and extraordinary is that little extra.",
+  "What you do today can improve all your tomorrows.",
+  "Success is not final; failure is not fatal. It is the courage to continue that counts.",
+  "Strive for progress, not perfection.",
+  "The only limit to our realisation of tomorrow is our doubts of today.",
+  "Every accomplishment starts with the decision to try.",
+  "You are capable of more than you know.",
+  "Hard work beats talent when talent doesn't work hard.",
+  "The more that you read, the more things you will know.",
+  "An investment in knowledge pays the best interest.",
+  "Failure is the opportunity to begin again more intelligently.",
+  "Discipline is choosing between what you want now and what you want most.",
+  "Your future is created by what you do today, not tomorrow.",
+  "The best time to plant a tree was 20 years ago. The second best time is now.",
+  "It's not how smart you are that matters — it's how you are smart.",
+  "Start where you are. Use what you have. Do what you can.",
+  "Success usually comes to those who are too busy looking for it.",
+  "The road to success is always under construction.",
+  "Perseverance is not a long race; it is many short races one after another.",
+  "You only fail when you stop trying.",
+  "A little progress each day adds up to big results.",
+  "Motivation gets you started; habit keeps you going.",
+  "Believe in yourself a little more.",
+  "The question isn't who is going to let me — it's who is going to stop me.",
+  "Once you learn to quit, it becomes a habit.",
+  "The struggle you're in today is developing the strength you need for tomorrow.",
+  "Make each day your masterpiece.",
+  "Excellence is not a destination but a continuous journey.",
+  "You don't need talent to outwork someone.",
+  "One hour of focused study is worth four hours of distracted effort.",
+  "Genius is one percent inspiration and ninety-nine percent perspiration.",
+  "Every master was once a disaster.",
+  "Go the extra mile — it's never crowded.",
+  "Clarity precedes mastery.",
+  "You will never plough a field if you only turn it over in your mind.",
+  "Don't count the days; make the days count.",
+  "Winners are not people who never fail, but people who never quit.",
+  "The more you sweat in practice, the less you bleed in battle.",
+  "Study not to know more, but to know better.",
+  "Knowing is not enough; we must apply. Willing is not enough; we must do.",
+  "Your only competition is who you were yesterday.",
+  "You don't rise to the level of your goals; you fall to the level of your systems.",
+  "The key is not to prioritise what's on your schedule, but to schedule your priorities.",
+  "Persistence guarantees that results are inevitable.",
+  "Learning is not attained by chance; it must be sought with ardour and attended with diligence.",
+  "A year from now you will wish you had started today.",
+  "It does not matter how slowly you go as long as you do not stop.",
+  "Nothing is impossible to a willing heart.",
+  "The mind is not a vessel to be filled, but a fire to be kindled.",
+  "Confidence comes not from always being right, but from not fearing to be wrong.",
+  "Focused, hard work is the real key to success.",
+  "There is no substitute for hard work.",
+  "Dare to be great.",
+  "Be stubborn about your goals, but flexible about your methods.",
+  "The secret to a rich life is to have more beginnings than endings.",
+  "Knowledge is power; power is success.",
+  "Talent is cheaper than table salt. What separates the talented individual from the successful one is a lot of hard work.",
+  "Success is walking from failure to failure with no loss of enthusiasm.",
+  "The harder the battle, the sweeter the victory.",
+  "Sometimes you win, sometimes you learn.",
+  "There are two types of people: those who read and those who can.",
+  "Reading furnishes the mind only with materials of knowledge; it is thinking that makes what we read ours.",
+  "The greatest pleasure in life is doing what people say you cannot do.",
+  "Small daily improvements over time lead to stunning results.",
+  "Today's preparation determines tomorrow's achievement.",
+  "Focus on the journey, not the destination.",
+  "Every strike brings me closer to the next home run.",
+  "Do something today that your future self will thank you for.",
+  "One book, one pen, one child, and one teacher can change the world.",
+  "The more I want to get something done, the less I call it work.",
+  "The beautiful thing about learning is that no one can take it away from you.",
+  "Education is not preparation for life — education is life itself.",
+  "I find that the harder I work, the more luck I seem to have.",
+  "Success is not measured by what you accomplish, but by the opposition you have encountered.",
+  "Your attitude, not your aptitude, will determine your altitude.",
+  "Don't be afraid to give up the good to go for the great.",
+  "The secret of success is to know something nobody else knows.",
+  "I have not failed. I've just found 10,000 ways that won't work.",
+  "Intelligence plus character — that is the goal of true education.",
+  "You are braver than you believe, stronger than you seem, and smarter than you think.",
+  "It's not whether you get knocked down — it's whether you get up.",
+  "The two most powerful warriors are patience and time.",
+  "He who opens a school door closes a prison.",
+  "If you're going through hell, keep going.",
+  "The best revenge is massive success.",
+  "If it is important to you, you will find a way. If not, you will find an excuse.",
+  "Some people dream of success, while others wake up and work for it.",
+  "Never give up on something you can't go a day without thinking about.",
+  "You were born to win, but to be a winner you must plan to win, prepare to win, and expect to win.",
+  "Act as if what you do makes a difference. It does.",
+  "Character cannot be developed in ease and quiet.",
+  "The secret of happiness is not in doing what one likes, but in liking what one does.",
+  "Champions keep playing until they get it right.",
+  "You've got to get up every morning with determination if you're going to go to bed with satisfaction.",
+  "If you want to achieve greatness, stop asking for permission.",
+  "All our dreams can come true, if we have the courage to pursue them.",
+  "The successful warrior is the average man, with laser-like focus.",
+  "If you want to live a happy life, tie it to a goal, not to people or things.",
+  "Never let the fear of striking out keep you from playing the game.",
+  "Life is 10% what happens to you and 90% how you react to it.",
+  "When you want to succeed as bad as you want to breathe, then you'll be successful.",
+  "Determine your priorities and focus on them.",
+  "Success is how high you bounce when you hit the bottom.",
+  "The way to get started is to quit talking and begin doing.",
+  "Whether you think you can, or you think you can't — you're right.",
+  "Either you run the day, or the day runs you.",
+  "You can never cross the ocean until you have the courage to lose sight of the shore.",
+  "A person who never made a mistake never tried anything new.",
+  "Life isn't about finding yourself; it's about creating yourself.",
+  "In the middle of every difficulty lies opportunity.",
+  "Tough times never last, but tough people do.",
+  "What we learn with pleasure we never forget.",
+  "Excellence is doing ordinary things extraordinarily well.",
+  "Preparation is the key to success.",
+  "Think big thoughts but relish small pleasures.",
+  "It is not enough to be busy; the question is what are we busy about.",
+  "The art of doing mathematics consists in finding that special case which contains all the germs of generality.",
+  "I am always doing that which I cannot do, in order that I may learn how to do it.",
+  "Study without desire spoils the memory, and it retains nothing that it takes in.",
+  "The more I read, the more I acquire; the more certain I am that I know nothing.",
+  "You can't go back and change the beginning, but you can start where you are and change the ending.",
+  "Try not to become a man of success, but rather try to become a man of value.",
+  "Real difficulties can be overcome; it is only the imaginary ones that are unconquerable.",
+  "It's not the hours you put in your work that counts; it's the work you put in the hours.",
+  "The key to success is to focus on goals, not obstacles.",
+  "Success means doing the best we can with what we have.",
+  "True happiness involves the full use of one's powers and talents.",
+  "The starting point of all achievement is desire.",
+  "The most effective way to do it is to do it.",
+  "Defeat is not bitter unless you swallow it.",
+  "A winner is just a loser who tried one more time.",
+  "Your imagination is your preview of life's coming attractions.",
+  "Live as if you were to die tomorrow; learn as if you were to live forever.",
+  "Formal education will make you a living; self-education will make you a fortune.",
+  "With the new day comes new strength and new thoughts.",
+  "Problems are not stop signs; they are guidelines.",
+  "The secret of success is consistency of purpose.",
+  "You were born with wings; don't prefer to crawl through life.",
+  "The only way to achieve the impossible is to believe it is possible.",
+  "Aspire to inspire before you expire.",
+  "The reward of suffering is experience.",
+  "Don't let yesterday take up too much of today.",
+  "All things are difficult before they are easy.",
+  "Step by step and the thing is done.",
+  "The more you practice, the luckier you get.",
+  "Strength does not come from physical capacity; it comes from an indomitable will.",
+  "The difference between who you are and who you want to be is what you do.",
+  "Never give up, for that is just the place and time that the tide will turn.",
+  "If you work hard enough and assert yourself and use your mind and imagination, you can shape the world to your desires.",
+  "A dreamer is one who can only find his way by moonlight.",
+  "It is better to have a short pencil than a long memory.",
+  "What comes easy won't last long; what lasts long won't come easy.",
+  "One day or day one — you decide.",
+  "Arise, awake, and do not stop until the goal is achieved.",
+  "Your future is in your hands and your hands alone.",
+  "He who studies and does not think is lost. He who thinks and does not study is in danger.",
+  "Fall seven times, stand up eight.",
+  "The first step to getting the things you want out of life is this: decide what you want.",
+  "Be willing to be a beginner every single morning.",
+  "Courage is resistance to fear, mastery of fear, not absence of fear.",
+  "What you get by achieving your goals is not as important as what you become.",
+  "You'll never plough a field by turning it over in your mind.",
+  "Whatever the mind can conceive and believe, it can achieve.",
+  "Logic will get you from A to B. Imagination will take you everywhere.",
+  "It is during our darkest moments that we must focus to see the light.",
+  "Knowing what must be done does away with fear.",
+  "Success is not about being the best. It's about always getting better.",
+  "Nothing great was ever achieved without enthusiasm.",
+  "A good plan today is better than a perfect plan tomorrow.",
+  "Set your goals high and don't stop till you get there.",
+  "Success is the child of audacity.",
+  "You don't have to see the whole staircase; just take the first step.",
+  "Every student can learn, just not on the same day or in the same way.",
+  "The secret of achievement is to hold a picture of a successful outcome in mind.",
+  "Self-belief and hard work will always earn you success.",
+  "Sometimes we need to be pushed to the edge to discover we can fly.",
+  "Mistakes are proof that you are trying.",
+  "It's not about being the smartest person in the room; it's about being the most prepared.",
+];
+
+// Build the master sequence: every 7th quote is SPECIAL, others cycle through QUOTE_POOL
+function buildMasterSequence(){
+  const seq = [];
+  let poolIdx = 0;
+  for(let i = 0; i < 420; i++){
+    if((i + 1) % 7 === 0){
+      seq.push(SPECIAL);
+    } else {
+      seq.push(QUOTE_POOL[poolIdx % QUOTE_POOL.length]);
+      poolIdx++;
+    }
+  }
+  return seq;
+}
+const MASTER_SEQ = buildMasterSequence();
+
+// Days since epoch (2024-01-01)
+const EPOCH = new Date(2024, 0, 1);
+function daysSinceEpoch(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.floor((today - EPOCH) / 86400000);
+}
+
+let quoteOffset = 0; // user navigation offset
+
+function getQuoteIndex(offset){
+  const base = daysSinceEpoch();
+  const idx = ((base + offset) % MASTER_SEQ.length + MASTER_SEQ.length) % MASTER_SEQ.length;
+  return idx;
+}
+
+function renderQuote(){
+  const idx = getQuoteIndex(quoteOffset);
+  const q = MASTER_SEQ[idx];
+  const isSpecial = (q === SPECIAL);
+  document.getElementById('quoteText').textContent = '\u201C' + q + '\u201D';
+  // Show day indicator
+  const dayLabel = quoteOffset === 0 ? 'Today\'s quote' :
+    quoteOffset > 0 ? `+${quoteOffset} day${Math.abs(quoteOffset)>1?'s':''}` :
+    `${quoteOffset} day${Math.abs(quoteOffset)>1?'s':''}`;
+  document.getElementById('quoteDay').textContent = dayLabel + (isSpecial ? ' · weekly anchor' : '');
+}
+
+function quoteNav(dir){
+  quoteOffset += dir;
+  renderQuote();
+}
+
+// Render on load
+renderQuote();
+
+/* ══════════════════════════════════════════
+   APP STATE & STORAGE
+══════════════════════════════════════════ */
+const KEY = 'jee-tracker-v4';
+let S = {dark:false, startDate:'', mainsDate:'', advDate:'', cls:'', scores:{}};
+function loadS(){ try{ const d=localStorage.getItem(KEY); if(d) S={...S,...JSON.parse(d)}; }catch(e){} }
+function saveS(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+/* ── JEE DATES DB ── */
+const JEE = {
+  2025:{mains:'2025-04-07',adv:'2025-05-18',ml:'Apr 7 2025',al:'May 18 2025'},
+  2026:{mains:'2026-04-02',adv:'2026-05-24',ml:'Apr 2 2026 (official)',al:'May 24 2026 (official)'},
+  2027:{mains:'2027-04-06',adv:'2027-05-23',ml:'~Apr 6 2027 (est.)',al:'~May 23 2027 (est.)'},
+  2028:{mains:'2028-04-04',adv:'2028-05-21',ml:'~Apr 4 2028 (est.)',al:'~May 21 2028 (est.)'},
+  2029:{mains:'2029-04-03',adv:'2029-05-20',ml:'~Apr 3 2029 (est.)',al:'~May 20 2029 (est.)'},
+};
+
+function jeeYearForClass(cls){
+  const now=new Date(); const yr=now.getFullYear(); const mo=now.getMonth()+1;
+  if(cls==='12') return (mo>6)?yr+1:yr;
+  if(cls==='11') return yr+1;
+  if(cls==='10') return yr+2;
+  return yr+1;
+}
+function autoFillDates(){
+  const cls=document.getElementById('classSelect').value;
+  if(!cls) return;
+  const yr=jeeYearForClass(cls);
+  const d=JEE[yr]||{mains:`${yr}-04-05`,adv:`${yr}-05-22`,ml:'estimated',al:'estimated'};
+  document.getElementById('mainsDate').value=d.mains;
+  document.getElementById('advDate').value=d.adv;
+  document.getElementById('mainsHint').textContent='✓ Auto-filled · '+d.ml;
+  document.getElementById('advHint').textContent='✓ Auto-filled · '+d.al;
+}
+
+/* ── DARK MODE ── */
+function toggleDark(){
+  S.dark=!S.dark;
+  document.documentElement.setAttribute('data-theme',S.dark?'dark':'light');
+  document.getElementById('darkBtn').textContent=S.dark?'☀️ Light mode':'🌙 Dark mode';
+  saveS();
+  if(allWeeks.length) renderCharts();
+}
+
+/* ── HELPERS ── */
+function parseD(s){ const[y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function fmt(d){ return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'}); }
+function fmtFull(d){ return d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}); }
+function daysDiff(a,b){ return Math.ceil((b-a)/86400000); }
+function getMonday(d){
+  const dd=new Date(d); dd.setHours(0,0,0,0);
+  const day=dd.getDay(); dd.setDate(dd.getDate()+(day===0?-6:1-day)); return dd;
+}
+function showEl(id){ document.getElementById(id).classList.remove('hidden'); }
+
+/* ══════════════════════════════════════════
+   BUILD CALENDAR
+══════════════════════════════════════════ */
+let allWeeks=[], todayMonStr='';
+
+function buildCalendar(){
+  const sd=document.getElementById('startDate').value;
+  const md=document.getElementById('mainsDate').value;
+  const ad=document.getElementById('advDate').value;
+  const cls=document.getElementById('classSelect').value;
+  if(!sd){ alert('Please enter your prep start date.'); return; }
+  if(!md||!ad){ alert('Please select your class (dates will auto-fill), or fill JEE dates manually.'); return; }
+  S.startDate=sd; S.mainsDate=md; S.advDate=ad; S.cls=cls; saveS();
+
+  const todayMon=getMonday(new Date());
+  todayMonStr=todayMon.toISOString().slice(0,10);
+
+  allWeeks=[];
+  let cur=getMonday(parseD(sd)); let n=1;
+  const end=parseD(ad);
+  while(cur<=end){
+    const sun=new Date(cur); sun.setDate(sun.getDate()+6);
+    const id=cur.toISOString().slice(0,10);
+    const isPast=cur<todayMon;
+    const isCur=id===todayMonStr;
+    allWeeks.push({
+      id, n:n++,
+      start:new Date(cur), end:new Date(sun),
+      year:cur.getFullYear(),
+      month:cur.toLocaleDateString('en-IN',{month:'long'}),
+      monthShort:cur.toLocaleDateString('en-IN',{month:'short'}).toUpperCase(),
+      isPast, isCur, isFut:!isPast&&!isCur
+    });
+    cur=new Date(cur); cur.setDate(cur.getDate()+7);
+  }
+
+  updateCountdowns(); updateStats(); renderCalendar(); renderCharts();
+  showEl('cdSection'); showEl('statsSection'); showEl('legendSection'); showEl('chartSection');
+  document.getElementById('emptyState').style.display='none';
+}
+
+/* ── COUNTDOWNS ── */
+function updateCountdowns(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const mains=parseD(S.mainsDate), adv=parseD(S.advDate);
+  const md=daysDiff(today,mains), ad=daysDiff(today,adv);
+  document.getElementById('mainsDays').textContent=md>=0?md:0;
+  document.getElementById('mainsDateTxt').textContent=fmtFull(mains);
+  document.getElementById('advDays').textContent=ad>=0?ad:0;
+  document.getElementById('advDateTxt').textContent=fmtFull(adv);
+}
+
+/* ── STATS ── */
+function updateStats(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  let elapsed=0,scored=0,sumP=0,sumM=0,cnt=0;
+  allWeeks.forEach(w=>{
+    if(w.isPast) elapsed++;
+    const sc=S.scores[w.id];
+    if(sc){ scored++; if(sc.p){sumP+=sc.p;cnt++;} if(sc.m) sumM+=sc.m; }
+  });
+  const weeksToMains=Math.max(0,Math.ceil(daysDiff(today,parseD(S.mainsDate))/7));
+  document.getElementById('sv1').textContent=elapsed;
+  document.getElementById('sv2').textContent=scored;
+  document.getElementById('sv3').textContent=cnt?(sumP/cnt).toFixed(1):'—';
+  document.getElementById('sv4').textContent=cnt?(sumM/cnt).toFixed(1):'—';
+  document.getElementById('sv5').textContent=weeksToMains;
+}
+
+/* ══════════════════════════════════════════
+   RENDER CALENDAR — Year groups, month rows
+══════════════════════════════════════════ */
+function renderCalendar(){
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+
+  // Group weeks by calendar year
+  const yearMap={};
+  allWeeks.forEach(w=>{
+    if(!yearMap[w.year]) yearMap[w.year]=[];
+    yearMap[w.year].push(w);
+  });
+
+  // Determine which year-labels to show (Year 1, Year 2…)
+  const yearKeys=Object.keys(yearMap).sort((a,b)=>+a-+b);
+
+  yearKeys.forEach((yr,yIdx)=>{
+    const wks=yearMap[yr];
+
+    // Work out the span string e.g. "2026-2027"
+    const startYr=+yr;
+    const endYr=startYr+1;
+    const spanStr=`${startYr}–${endYr}`;
+    const yearNum=yIdx+1;
+
+    // Year card
+    const card=document.createElement('div');
+    card.className='year-card';
+
+    // Year header
+    const hdr=document.createElement('div');
+    hdr.className='year-hdr';
+    hdr.innerHTML=`<div class="year-hdr-line"></div>
+      <div class="year-hdr-text">— YEAR ${yearNum} · ${spanStr} —</div>
+      <div class="year-hdr-line"></div>`;
+    card.appendChild(hdr);
+
+    // Group weeks by month within year
+    const monthMap={};
+    wks.forEach(w=>{
+      const key=w.month;
+      if(!monthMap[key]) monthMap[key]=[];
+      monthMap[key].push(w);
+    });
+
+    Object.entries(monthMap).forEach(([month,mwks])=>{
+      const block=document.createElement('div');
+      block.className='month-block';
+
+      // Month label
+      const lbl=document.createElement('div');
+      lbl.className='month-lbl';
+      lbl.textContent=month.toUpperCase();
+      block.appendChild(lbl);
+
+      // Weeks row
+      const row=document.createElement('div');
+      row.className='weeks-row';
+
+      mwks.forEach(w=>{
+        const cell=document.createElement('div');
+        cell.className='wk';
+
+        if(w.isFut){
+          cell.classList.add('future');
+        } else {
+          cell.classList.add('clickable');
+          if(w.isCur) cell.classList.add('cur');
+        }
+
+        const sc=S.scores[w.id];
+        if(sc&&sc.p) cell.classList.add('p'+sc.p);
+
+        // Motivation dot
+        if(sc&&sc.m){
+          const dot=document.createElement('span');
+          dot.className='mdot m'+sc.m;
+          cell.appendChild(dot);
+        }
+
+        // Tooltip
+        const tip=document.getElementById('tooltip');
+        const tipLines=['W'+w.n+' · '+fmt(w.start)+'–'+fmt(w.end)];
+        if(sc){ if(sc.p) tipLines.push('Productivity: '+sc.p+'/5'); if(sc.m) tipLines.push('Motivation: '+sc.m+'/5'); }
+        else if(!w.isFut) tipLines.push('← click to score');
+        const tipText=tipLines.join('\n');
+
+        cell.addEventListener('mouseenter',function(e){
+          tip.textContent=tipText; tip.classList.add('show');
+        });
+        cell.addEventListener('mousemove',function(e){
+          tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-10)+'px';
+        });
+        cell.addEventListener('mouseleave',function(){
+          tip.classList.remove('show');
+        });
+
+        if(!w.isFut){
+          cell.addEventListener('click',function(e){
+            e.stopPropagation(); openModal(w);
+          });
+        }
+
+        row.appendChild(cell);
+      });
+
+      block.appendChild(row);
+      card.appendChild(block);
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+let modalWeek=null, tempP=0, tempM=0;
+
+function openModal(w){
+  modalWeek=w;
+  const sc=S.scores[w.id]||{};
+  tempP=sc.p||0; tempM=sc.m||0;
+  document.getElementById('mTitle').textContent='Week '+w.n;
+  document.getElementById('mSub').textContent=fmt(w.start)+' – '+fmt(w.end);
+  refreshPBtns(); refreshMBtns();
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  modalWeek=null; tempP=0; tempM=0;
+}
+document.getElementById('overlay').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+function setProd(v){ tempP=(tempP===v?0:v); refreshPBtns(); }
+function setMotiv(v){ tempM=(tempM===v?0:v); refreshMBtns(); }
+function refreshPBtns(){
+  document.querySelectorAll('#pBtns .sb').forEach((b,i)=>b.classList.toggle('ap',i+1===tempP));
+}
+function refreshMBtns(){
+  document.querySelectorAll('#mBtns .sb').forEach((b,i)=>b.classList.toggle('am',i+1===tempM));
+}
+function saveScore(){
+  if(!modalWeek) return;
+  if(!tempP&&!tempM){ alert('Please select at least one score.'); return; }
+  if(!S.scores[modalWeek.id]) S.scores[modalWeek.id]={};
+  if(tempP) S.scores[modalWeek.id].p=tempP;
+  if(tempM) S.scores[modalWeek.id].m=tempM;
+  saveS(); renderCalendar(); updateStats(); renderCharts(); closeModal();
+}
+function clearScore(){
+  if(!modalWeek) return;
+  delete S.scores[modalWeek.id];
+  saveS(); renderCalendar(); updateStats(); renderCharts(); closeModal();
+}
+
+/* ══════════════════════════════════════════
+   CHARTS
+══════════════════════════════════════════ */
+function gc(){
+  const dk=S.dark;
+  return{
+    grid:dk?'#382C20':'#D8D0C4', txt:dk?'#A08870':'#9E8E80', bg:dk?'#1C1610':'#FAFAF6',
+    prod:dk?'#FF4A60':'#C8102E', motiv:dk?'#60A5FA':'#2563EB',
+    pFill:dk?'rgba(255,74,96,.16)':'rgba(200,16,46,.09)',
+    mFill:dk?'rgba(96,165,250,.16)':'rgba(37,99,235,.09)',
+  };
+}
+
+function renderCharts(){
+  const sup=document.getElementById('superToggle').checked;
+  document.getElementById('chartsGrid').className='charts-grid'+(sup?' one':'');
+  document.getElementById('motivCard').style.display=sup?'none':'';
+  document.getElementById('prodTitle').innerHTML=sup
+    ?`<span class="dot" style="background:var(--accent)"></span>Productivity&nbsp;&nbsp;<span class="dot" style="background:var(--blue)"></span>Motivation <em style="margin-left:8px;font-style:normal;font-size:.6rem;opacity:.6">superimposed</em>`
+    :`<span class="dot" style="background:var(--accent)"></span>Productivity · by week`;
+
+  const scored=allWeeks.filter(w=>S.scores[w.id]);
+  const labels=scored.map(w=>'W'+w.n);
+  const pData=scored.map(w=>S.scores[w.id].p||null);
+  const mData=scored.map(w=>S.scores[w.id].m||null);
+
+  setTimeout(()=>{
+    drawChart('cProd',labels,pData,sup?mData:null,false);
+    if(!sup) drawChart('cMotiv',labels,mData,null,true);
+  },10);
+}
+
+function drawChart(id,labels,d1,d2,isMotiv){
+  const canvas=document.getElementById(id);
+  if(!canvas) return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.parentElement.clientWidth-40;
+  const H=180;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const c=gc();
+  const P={t:16,r:16,b:32,l:32};
+  const pw=W-P.l-P.r, ph=H-P.t-P.b;
+
+  ctx.fillStyle=c.bg; ctx.fillRect(0,0,W,H);
+  for(let i=1;i<=5;i++){
+    const y=P.t+ph-((i-1)/4)*ph;
+    ctx.beginPath(); ctx.strokeStyle=c.grid; ctx.lineWidth=1; ctx.setLineDash([3,5]);
+    ctx.moveTo(P.l,y); ctx.lineTo(P.l+pw,y); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=c.txt; ctx.font=`9px 'Space Mono',monospace`; ctx.textAlign='right';
+    ctx.fillText(i,P.l-5,y+3.5);
+  }
+  if(!labels||!labels.length){
+    ctx.fillStyle=c.txt; ctx.font=`11px 'Plus Jakarta Sans',sans-serif`; ctx.textAlign='center';
+    ctx.fillText('Score some weeks to see your chart',W/2,H/2); return;
+  }
+  function drawLine(data,col,fill){
+    const pts=data.map((v,i)=>({
+      x:P.l+(labels.length===1?pw/2:(i/(labels.length-1))*pw),
+      y:v!==null?P.t+ph-((v-1)/4)*ph:null
+    }));
+    const valid=pts.filter(p=>p.y!==null);
+    if(!valid.length) return;
+    ctx.beginPath(); let mv=true;
+    pts.forEach(p=>{if(p.y===null){mv=true;return;}if(mv){ctx.moveTo(p.x,p.y);mv=false;}else ctx.lineTo(p.x,p.y);});
+    ctx.lineTo(valid[valid.length-1].x,P.t+ph); ctx.lineTo(valid[0].x,P.t+ph);
+    ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+    ctx.beginPath(); mv=true;
+    pts.forEach(p=>{if(p.y===null){mv=true;return;}if(mv){ctx.moveTo(p.x,p.y);mv=false;}else ctx.lineTo(p.x,p.y);});
+    ctx.strokeStyle=col; ctx.lineWidth=2; ctx.lineJoin='round'; ctx.setLineDash([]); ctx.stroke();
+    pts.forEach(p=>{if(p.y===null)return;
+      ctx.beginPath(); ctx.arc(p.x,p.y,3.5,0,Math.PI*2);
+      ctx.fillStyle=col; ctx.fill();
+      ctx.strokeStyle=c.bg; ctx.lineWidth=1.5; ctx.stroke();
+    });
+  }
+  drawLine(d1,isMotiv?c.motiv:c.prod,isMotiv?c.mFill:c.pFill);
+  if(d2) drawLine(d2,c.motiv,c.mFill);
+  const step=Math.max(1,Math.ceil(labels.length/8));
+  labels.forEach((l,i)=>{
+    if(i%step!==0&&i!==labels.length-1) return;
+    const x=P.l+(labels.length===1?pw/2:(i/(labels.length-1))*pw);
+    ctx.fillStyle=c.txt; ctx.font=`8px 'Space Mono',monospace`; ctx.textAlign='center';
+    ctx.fillText(l,x,H-P.b+13);
+  });
+  ctx.beginPath(); ctx.strokeStyle=c.grid; ctx.lineWidth=1; ctx.setLineDash([]);
+  ctx.moveTo(P.l,P.t); ctx.lineTo(P.l,P.t+ph); ctx.lineTo(P.l+pw,P.t+ph); ctx.stroke();
+}
+
+window.addEventListener('resize',()=>{ if(allWeeks.length) renderCharts(); });
+
+/* ── INIT ── */
+(function init(){
+  loadS();
+  if(S.dark){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('darkBtn').textContent='☀️ Light mode';
+  }
+  if(S.startDate) document.getElementById('startDate').value=S.startDate;
+  if(S.mainsDate) document.getElementById('mainsDate').value=S.mainsDate;
+  if(S.advDate) document.getElementById('advDate').value=S.advDate;
+  if(S.cls){
+    document.getElementById('classSelect').value=S.cls;
+    const yr=jeeYearForClass(S.cls);
+    const d=JEE[yr]||{};
+    if(d.ml) document.getElementById('mainsHint').textContent='✓ Auto-filled · '+d.ml;
+    if(d.al) document.getElementById('advHint').textContent='✓ Auto-filled · '+d.al;
+  }
+  if(S.startDate&&S.mainsDate&&S.advDate) buildCalendar();
+})();
+</script>
+</body>
+</html>
